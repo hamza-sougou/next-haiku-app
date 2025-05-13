@@ -1,22 +1,22 @@
+import Link from "next/link";
 import React from "react";
 
 const Header = () => {
   return (
-    <nav className="flex justify-between items-center bg-gray-800 p-4">
-      <div className="text-white text-2xl">Mon Application</div>
-      <ul className="flex space-x-4">
-        <li>
-          <a href="#" className="text-white hover:text-gray-400">
-            Accueil
-          </a>
-        </li>
-        <li>
-          <a href="#" className="text-white hover:text-gray-400">
-            À Propos
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <div className="navbar bg-amber-700 shadow-sm rounded-lg">
+      <div className="flex-1">
+        <Link href="/" className="btn btn-ghost text-xl">
+          HAIKU !!!
+        </Link>
+      </div>
+      <div className="flex-none">
+        <ul className="menu menu-horizontal px-1">
+          <li>
+            <Link href="/login">Connexion</Link>
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 };
 
