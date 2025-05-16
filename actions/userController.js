@@ -4,11 +4,17 @@ import { cookies } from "next/headers";
 import { getCollection } from "../lib/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { redirect } from "next/navigation";
 
 function isAlphanumeric(str) {
   const regex = /^[a-zA-Z0-9]*$/;
   return regex.test(str);
 }
+
+export const logout = async function () {
+  cookies().delete("ourhaikuapp");
+  redirect("/");
+};
 
 export const register = async function (prevState, formData) {
   const errors = {};
@@ -24,7 +30,7 @@ export const register = async function (prevState, formData) {
   ourUser.username = ourUser.username.trim();
   ourUser.password = ourUser.password.trim();
 
-  // Validation du nom d'utilisateurS
+  // Validation du nom d'utilisateur
 
   if (ourUser.username.length < 3) {
     errors.username =
@@ -70,7 +76,22 @@ export const register = async function (prevState, formData) {
 
   // Stockage de l'utilisateur dans la base de données
   const usersCollection = await getCollection("users");
-  const newUser = await usersCollection.insertOne({ ourUser });
+
+  // Vérifier si le nom d'utilisateur est déjà pris
+  const existingUser = await usersCollection.findOne({
+    username: ourUser.username,
+  });
+
+  if (existingUser) {
+    errors.username = "Ce nom d'utilisateur est déjà pris";
+    return {
+      errors: errors,
+      success: false,
+    };
+  }
+
+  // Insérer le nouvel utilisateur
+  const newUser = await usersCollection.insertOne(ourUser);
   const userId = newUser.insertedId.toString();
 
   // Création du token JWT
